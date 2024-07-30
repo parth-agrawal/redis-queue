@@ -64,16 +64,6 @@ func ClickHandler(user string, timestamp int) error {
 
 	var ctx = context.Background()
 
-	err := store.Set(ctx, "foo", "bar", 0).Err()
-	if err != nil {
-		return fmt.Errorf("failed to set key-value pair: %w", err)
-	}
-
-	// Create a queue called fruits and add apple and banana to it
-	err = store.LPush(ctx, "fruits", "apple", "banana").Err()
-	if err != nil {
-		return fmt.Errorf("failed to create fruits queue: %w", err)
-	}
 
 	fmt.Println("we're here in the clickHandler. user and timestamp are ", user, timestamp)
 
