@@ -8,6 +8,8 @@ type ClickRequest = {
   timestamp: number
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 function App() {
   const [count, setCount] = useState(0)
   const [data, setData] = useState<ClickRequest>()
@@ -18,7 +20,7 @@ function App() {
   useEffect(() => {
     const fetchTotalClicks = async () => {
       try {
-        const response = await fetch("http://localhost:3000/total_clicks");
+        const response = await fetch(`${BACKEND_URL}/total_clicks`);
         const result = await response.json();
         console.log("Total Clicks:", result.total_clicks);
         setTotalClicks(result.total_clicks);
@@ -36,7 +38,7 @@ function App() {
   const handleClick = async () => {
     setError(null)
     setData({ user: "Parth", timestamp: Date.now() })
-    const response = await fetch("http://localhost:3000/click", {
+    const response = await fetch(`${BACKEND_URL}/click`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
