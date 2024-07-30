@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -13,42 +12,16 @@ var store *redis.Client
 
 
 func init () { 
+	totalGlobalClickCount = 0
 	store = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
 	go startQueueCleaner()
+	go slurpClickTimed()
 }
 
-func startQueueCleaner() {
-
-	fmt.Println("starting cleaner")
-
-	ticker := time.NewTicker(10 * time.Second)
-	ctx := context.Background()
-
-	for range ticker.C { 
-		
-		fmt.Println("starting cleaning, iterating users")
-		users, err := store.Keys(ctx, "[^t]*|t[^a]*|ta[^s]*|tas[^k]*|task[^Q]*|taskQ[^u]*|taskQu[^e]*|taskQue[^u]*|taskQueu[^e]*").Result()
-		if err != nil {
-			fmt.Printf("error getting user keys: %v", err)
-			continue
-		}
-
-		fmt.Println("starting to remove items")
-		
-		for _, user := range users { 
-			_, err := store.RPop(ctx, user).Result()
-			if err != nil && err != redis.Nil { 
-				fmt.Printf("error removing item %v", err)
-			}
-		}
-	}
-
-
-}
 
 
 func ClickHandler(user string, timestamp int) error {
