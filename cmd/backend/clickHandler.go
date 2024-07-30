@@ -2,6 +2,7 @@ package backend
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -30,9 +31,9 @@ func startQueueCleaner() {
 	for range ticker.C { 
 		
 		fmt.Println("starting cleaning, iterating users")
-		users, err := store.Keys (ctx, "*").Result()
+		users, err := store.Keys(ctx, "[^t]*|t[^a]*|ta[^s]*|tas[^k]*|task[^Q]*|taskQ[^u]*|taskQu[^e]*|taskQue[^u]*|taskQueu[^e]*").Result()
 		if err != nil {
-			fmt.Printf("error getting user key: %v", err)
+			fmt.Printf("error getting user keys: %v", err)
 			continue
 		}
 
@@ -85,13 +86,38 @@ func ClickHandler(user string, timestamp int) error {
 		return fmt.Errorf("failed to add timestamp to queue: %w", err)
 	}
 
+	err = loadTaskQueue(user, timestamp)
+	if err != nil{ 
+		return fmt.Errorf("failed to add to taskqueue: %w", err)
+	}
 
-
-
+	
 
 	return err
 
 
 	
+}
+
+
+func loadTaskQueue (user string, timestamp int) error { 
+
+	ctx := context.Background()
+
+	// load into taskqueue
+
+	taskData := map[string]interface{}{
+		"user":      user,
+		"timestamp": timestamp,
+	}
+	jsonData, err := json.Marshal(taskData)
+	if err != nil {
+		return fmt.Errorf("failed to marshal task data: %w", err)
+	}
+	err = store.LPush(ctx, "taskQueue", jsonData).Err()
+
+	return err
+
+
 }
 
