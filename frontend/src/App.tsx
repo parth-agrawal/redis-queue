@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 type ClickRequest = {
@@ -11,7 +9,6 @@ type ClickRequest = {
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 function App() {
-  const [count, setCount] = useState(0)
   const [data, setData] = useState<ClickRequest>()
   const [totalClicks, setTotalClicks] = useState(0)
 
