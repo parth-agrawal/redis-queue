@@ -25,25 +25,41 @@ func ClickHandler(user string, timestamp int) error {
 
 	var ctx = context.Background()
 
-	
-	// jsonData, err := json.Marshal("foo")
-	// if err != nil {
-	// 	return err
-	// }
-	
-	err := store.Set(ctx, "key", "value", 0).Err()
-    if err != nil {
-        panic(err)
-    }
+	err := store.Set(ctx, "foo", "bar", 0).Err()
+	if err != nil {
+		return fmt.Errorf("failed to set key-value pair: %w", err)
+	}
 
-	val, err := store.Get(ctx, "key").Result()
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("key", val)
+	// Create a queue called fruits and add apple and banana to it
+	err = store.LPush(ctx, "fruits", "apple", "banana").Err()
+	if err != nil {
+		return fmt.Errorf("failed to create fruits queue: %w", err)
+	}
+
+	fmt.Println("we're here in the clickHandler. the user is %s and the timestamp is %s", user, timestamp)
+
+	// read queue size
+	queueLength, err := store.LLen(ctx, user).Result()
+	if err!=nil {
+		return fmt.Errorf("error reading queue for user %s", user)
+	}
+
+
+	if(queueLength >= 10) {
+		return fmt.Errorf("rate limit for user %s exceeded", user)
+	}
+
+	// if it's the right length, less than 10, add it to the userQueue
+
+	err= store.LPush(ctx, user, timestamp).Err()
+	if err != nil {
+		return fmt.Errorf("failed to add timestamp to queue: %w", err)
+	}
+
 
 	return err
 
 
 	
 }
+
