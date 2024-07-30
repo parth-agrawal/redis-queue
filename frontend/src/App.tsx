@@ -55,15 +55,18 @@ function App() {
 
   return (
     <>
-      <div className="text-3xl">
-        One Million Clicks
+      <div className="flex flex-col justify-center items-center gap-5 h-screen">
+
+        <div className="text-3xl">
+          One Million Clicks
+        </div>
+        <button onClick={handleClick} className="border border-black rounded-md p-2">
+          count is {totalClicks} / 1,000,000
+        </button>
+        <div className="text-red-500">
+          {error && <p>{error}</p>}
+        </div >
       </div>
-      <button onClick={handleClick} className="border border-black rounded-md p-2">
-        count is {totalClicks}
-      </button>
-      <div className="text-red-500">
-        {error && <p>{error}</p>}
-      </div >
     </>
   )
 }
