@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -14,7 +15,7 @@ var store *redis.Client
 func init () { 
 	totalGlobalClickCount = 0
 	store = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_ADDRESS"),
 		Password: "",
 		DB:       0,
 	})
