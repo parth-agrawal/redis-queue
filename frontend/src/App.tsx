@@ -63,17 +63,21 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center gap-5 h-screen">
+      <div className="flex flex-col justify-center items-center gap-5 h-screen w-screen">
 
-        <div className="text-3xl">
+        <div className="absolute inset-0"
+          style={{ backgroundImage: `url(pointer.png)`, backgroundSize: '20px 20px', backgroundRepeat: 'repeat', opacity: 0.1 }}>
+        </div>
+        <div className="relative text-3xl" style={{ opacity: 1 }} >
           One Million Clicks
         </div>
-        <button onClick={handleClick} className="border border-black rounded-md p-2">
+        <button onClick={handleClick} className="relative border border-black rounded-md p-2" style={{ opacity: 1 }}>
           count is {totalClicks} / 1,000,000
         </button>
-        <div className="text-red-500 min-h-[20px]">
+        <div className="relative text-red-500 min-h-[20px]" style={{ opacity: 1 }}>
           {error ? <p>{error}</p> : <p>&nbsp;</p>}
         </div>
+
       </div>
     </>
   )
