@@ -9,10 +9,18 @@ type ClickRequest = {
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 function App() {
-  const [data, setData] = useState<ClickRequest>()
+  const [data, setData] = useState<ClickRequest>({ user: "Parth", timestamp: Date.now() })
   const [totalClicks, setTotalClicks] = useState(0)
 
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const errorTimeout = setTimeout(() => {
+      setError(null);
+    }, 3000);
+
+    return () => clearTimeout(errorTimeout); // Cleanup on component unmount
+  }, [error]);
 
   useEffect(() => {
     const fetchTotalClicks = async () => {
@@ -63,9 +71,9 @@ function App() {
         <button onClick={handleClick} className="border border-black rounded-md p-2">
           count is {totalClicks} / 1,000,000
         </button>
-        <div className="text-red-500">
-          {error && <p>{error}</p>}
-        </div >
+        <div className="text-red-500 min-h-[20px]">
+          {error ? <p>{error}</p> : <p>&nbsp;</p>}
+        </div>
       </div>
     </>
   )
