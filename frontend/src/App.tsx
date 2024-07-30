@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -11,6 +11,24 @@ type ClickRequest = {
 function App() {
   const [count, setCount] = useState(0)
   const [data, setData] = useState<ClickRequest>()
+  const [totalClicks, setTotalClicks] = useState(0)
+
+  useEffect(() => {
+    const fetchTotalClicks = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/total_clicks");
+        const result = await response.json();
+        console.log("Total Clicks:", result.total_clicks);
+        setTotalClicks(result.total_clicks);
+      } catch (error) {
+        console.error("Error fetching total clicks:", error);
+      }
+    };
+
+    const intervalId = setInterval(fetchTotalClicks, 1000);
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, []);
 
 
   const handleClick = async () => {
@@ -34,7 +52,7 @@ function App() {
         One Million Clicks
       </div>
       <button onClick={handleClick}>
-        count is {count}
+        count is {totalClicks}
       </button>
     </>
   )
