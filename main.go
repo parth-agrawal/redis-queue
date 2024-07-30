@@ -9,6 +9,9 @@ import (
 )
 
 
+
+
+
 func main () { 
 	app := fiber.New()
 
@@ -18,6 +21,13 @@ func main () {
 
 	app.Get("/", func(c fiber.Ctx) error { 
 		return c.SendString("Hello, World!")
+	})
+
+	app.Get("/total_clicks", func(c fiber.Ctx) error { 
+		clickData := map[string]interface{}{
+			"total_clicks": backend.GetTotalClicks(),
+		}
+		return c.JSON(clickData)
 	})
 
 	app.Post("/click", func(c fiber.Ctx) error {
@@ -36,11 +46,6 @@ func main () {
 
 		// Use the parsed request data instead of FormValue
 		err := backend.ClickHandler(req.User, req.Timestamp)
-
-		if err != nil {
-			log.Printf("Error in ClickHandler: %v", err)
-		}
-
 		
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())

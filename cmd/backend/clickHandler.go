@@ -2,8 +2,8 @@ package backend
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -12,42 +12,16 @@ var store *redis.Client
 
 
 func init () { 
+	totalGlobalClickCount = 0
 	store = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
 	go startQueueCleaner()
+	go slurpClickTimed()
 }
 
-func startQueueCleaner() {
-
-	fmt.Println("starting cleaner")
-
-	ticker := time.NewTicker(10 * time.Second)
-	ctx := context.Background()
-
-	for range ticker.C { 
-		
-		fmt.Println("starting cleaning, iterating users")
-		users, err := store.Keys (ctx, "*").Result()
-		if err != nil {
-			fmt.Printf("error getting user key: %v", err)
-			continue
-		}
-
-		fmt.Println("starting to remove items")
-		
-		for _, user := range users { 
-			_, err := store.RPop(ctx, user).Result()
-			if err != nil && err != redis.Nil { 
-				fmt.Printf("error removing item %v", err)
-			}
-		}
-	}
-
-
-}
 
 
 func ClickHandler(user string, timestamp int) error {
@@ -85,13 +59,38 @@ func ClickHandler(user string, timestamp int) error {
 		return fmt.Errorf("failed to add timestamp to queue: %w", err)
 	}
 
+	err = loadTaskQueue(user, timestamp)
+	if err != nil{ 
+		return fmt.Errorf("failed to add to taskqueue: %w", err)
+	}
 
-
-
+	
 
 	return err
 
 
 	
+}
+
+
+func loadTaskQueue (user string, timestamp int) error { 
+
+	ctx := context.Background()
+
+	// load into taskqueue
+
+	taskData := map[string]interface{}{
+		"user":      user,
+		"timestamp": timestamp,
+	}
+	jsonData, err := json.Marshal(taskData)
+	if err != nil {
+		return fmt.Errorf("failed to marshal task data: %w", err)
+	}
+	err = store.LPush(ctx, "taskQueue", jsonData).Err()
+
+	return err
+
+
 }
 
