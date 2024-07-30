@@ -13,6 +13,8 @@ function App() {
   const [data, setData] = useState<ClickRequest>()
   const [totalClicks, setTotalClicks] = useState(0)
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     const fetchTotalClicks = async () => {
       try {
@@ -41,6 +43,11 @@ function App() {
       body: JSON.stringify(data)
     })
 
+    if (response.status !== 200) {
+      setError(await response.text());
+      return;
+    }
+
     console.log(await response.text())
 
 
@@ -54,6 +61,9 @@ function App() {
       <button onClick={handleClick}>
         count is {totalClicks}
       </button>
+      <div>
+        {error && <p>{error}</p>}
+      </div>
     </>
   )
 }

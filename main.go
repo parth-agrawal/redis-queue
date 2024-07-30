@@ -46,11 +46,6 @@ func main () {
 
 		// Use the parsed request data instead of FormValue
 		err := backend.ClickHandler(req.User, req.Timestamp)
-
-		if err != nil {
-			log.Printf("Error in ClickHandler: %v", err)
-		}
-
 		
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
