@@ -34,6 +34,7 @@ function App() {
 
 
   const handleClick = async () => {
+    setError(null)
     setData({ user: "Parth", timestamp: Date.now() })
     const response = await fetch("http://localhost:3000/click", {
       method: "POST",
@@ -58,12 +59,12 @@ function App() {
       <div className="text-3xl">
         One Million Clicks
       </div>
-      <button onClick={handleClick}>
+      <button onClick={handleClick} className="border border-black rounded-md p-2">
         count is {totalClicks}
       </button>
-      <div>
+      <div className="text-red-500">
         {error && <p>{error}</p>}
-      </div>
+      </div >
     </>
   )
 }
