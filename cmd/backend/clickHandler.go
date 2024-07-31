@@ -50,7 +50,7 @@ func ClickHandler(user string, timestamp int) error {
 
 
 	if(queueLength >= 10) {
-		return fmt.Errorf("rate limit for user %s exceeded", user)
+		return fmt.Errorf("rate limit for user exceeded", user)
 	}
 
 	// if it's the right length, less than 10, add it to the userQueue
